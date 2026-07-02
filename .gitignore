@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Playwright
+/test-results/
+/playwright-report/
+/custom-report/
+/blob-report/
+/playwright/.cache/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.*
+
+# OS / editor (local only — not part of the framework)
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
