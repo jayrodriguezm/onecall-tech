@@ -51,7 +51,9 @@ npx playwright install chromium
 | `npm run test:ui` | Playwright UI mode (pick tests, watch, time travel) |
 | `npm run test:debug` | Playwright Inspector (pause, step, pick locators) |
 | `npm run report` | Open last HTML report |
-| `npx tsc --noEmit` | Type-check without running tests |
+| `npm run typecheck` | Type-check without running tests |
+| `npm run ci` | Full CI pipeline (install + verify) — same as `scripts/ci.sh` |
+| `npm run ci:verify` | Type-check + tests only (deps must exist) |
 
 ---
 
@@ -87,6 +89,8 @@ npm run report           # Playwright HTML report (playwright-report/)
 | `custom-report/summary.json` | Machine-readable results |
 
 Open `custom-report/summary.md` in your editor, or parse `summary.json` in CI.
+
+**CI:** Run `npm run ci` locally to simulate any CI runner. See [docs/workflows/CI.md](./docs/workflows/CI.md). GitHub Actions (`.github/workflows/e2e.yml`) is optional.
 
 See [Debugging & failure artifacts](#debugging--failure-artifacts) for traces, screenshots, and video.
 

@@ -243,6 +243,7 @@ Update documentation when you:
 | Change type | Update |
 |---|---|
 | New command or script | `QUICK_REFERENCE.md`, `README.md` |
+| CI workflow change | `scripts/ci.sh`, [docs/workflows/CI.md](./docs/workflows/CI.md), `QUICK_REFERENCE.md` |
 | New convention | `CONTRIBUTING.md` |
 | New limitation | `KNOWN_ISSUES.md` |
 | New doc or workflow | `AGENTS.md` task routing table |

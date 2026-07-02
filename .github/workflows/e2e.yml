@@ -1,0 +1,60 @@
+# Optional GitHub Actions adapter for the platform-agnostic CI contract.
+# Canonical pipeline: scripts/ci.sh (see docs/workflows/CI.md)
+
+name: E2E Tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright (Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Run CI pipeline
+        run: bash scripts/ci.sh
+        env:
+          CI: true
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload custom summary report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: custom-report
+          path: custom-report/
+          retention-days: 14
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 14

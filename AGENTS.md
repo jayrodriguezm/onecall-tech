@@ -27,6 +27,7 @@ Humans: start with [README.md](./README.md). This file is optimized for agents.
 | Add or change a test spec | [CONTRIBUTING.md](./CONTRIBUTING.md) → Test organization, Assertion strategy |
 | Add or change a page object | [CONTRIBUTING.md](./CONTRIBUTING.md) → Page Object standards, Selector strategy |
 | Change Playwright / TypeScript config | [README.md](./README.md) → Configuration; [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) for trade-offs |
+| Change CI pipeline | [docs/workflows/CI.md](./docs/workflows/CI.md) → `scripts/ci.sh` |
 | Open or prepare a pull request | [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md) |
 | Pre-push / pre-PR self-review (required) | [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) |
 | Fill in the GitHub PR body | [.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md) |
@@ -77,5 +78,6 @@ npm test
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | How should I implement changes? |
 | [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) | What limitations exist? |
 | **AGENTS.md** (this file) | **Which doc should I read for my task?** |
+| [docs/workflows/CI.md](./docs/workflows/CI.md) | How does CI work on any platform? |
 | [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md) | What is the PR lifecycle? |
 | [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) | What checks run before a PR? |

@@ -6,6 +6,20 @@ Documented limitations and intentional trade-offs for this framework. This is **
 
 ## Current Limitations
 
+### Baseline CI pipeline
+
+The CI **contract** is platform-agnostic: [`scripts/ci.sh`](../scripts/ci.sh) (or `npm run ci`). See [docs/workflows/CI.md](../docs/workflows/CI.md).
+
+| Phase | Command |
+|---|---|
+| Full pipeline | `bash scripts/ci.sh` / `npm run ci` |
+| Install only | `bash scripts/ci.sh install` / `npm run ci:install` |
+| Verify only | `bash scripts/ci.sh verify` / `npm run ci:verify` |
+
+GitHub Actions (`.github/workflows/e2e.yml`) is an **optional adapter** — not required. Wire the same script into Jenkins, GitLab, CircleCI, or run locally.
+
+**Why placeholder-style:** Functional today; extend `scripts/ci.sh` rather than provider YAML when adding checks.
+
 ### Single browser project (Chromium only)
 
 Only Chromium is configured in `playwright.config.ts`. Firefox and WebKit are not installed or tested.
@@ -17,12 +31,6 @@ Only Chromium is configured in `playwright.config.ts`. Firefox and WebKit are no
 The suite contains one E2E test with no `@smoke` or `@regression` tags.
 
 **Why:** Tagging adds value once multiple tests exist. Smoke and regression are currently equivalent.
-
-### No CI pipeline
-
-Tests run locally only. No GitHub Actions workflow is configured.
-
-**Why:** Out of scope for initial bootstrap. CI should be added before team-scale usage.
 
 ### External site dependency
 
@@ -64,7 +72,7 @@ The RFQ form shows success through a JavaScript `alert()` dialog, not a DOM elem
 
 - Cross-browser matrix (Firefox, WebKit)
 - Test tagging for smoke vs. regression
-- CI workflow with report artifacts
+- CI enhancements (browser matrix, scheduled runs, PR comments)
 - Test data factories in `utils/`
 - DOM-based success assertion if the application replaces `alert()`
 

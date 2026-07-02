@@ -21,8 +21,7 @@ End-to-end automation framework for [AstroFlow](https://astroflow.wingflows.com/
 **Out of scope**
 
 - API-level testing (no API client layer yet).
-- Cross-browser matrix (Chromium only for now).
-- CI pipeline configuration.
+- Cross-browser matrix in CI (Chromium only for now).
 - Backend or form submission persistence validation.
 
 ---
@@ -67,6 +66,7 @@ Runtime settings live in `playwright.config.ts`:
 | `testDir` | `./tests` | Specs only; page objects stay separate |
 | `retries` | 2 in CI, 0 locally | Reduces CI noise without masking local flakiness |
 | `workers` | 1 in CI | Predictable execution in shared pipelines |
+| CI | `scripts/ci.sh` | Platform-agnostic pipeline; see [docs/workflows/CI.md](./docs/workflows/CI.md) |
 | `trace` | `on-first-retry` | Records a trace zip when a test is retried — see [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) → Debugging |
 | `screenshot` / `video` | `only-on-failure` / `retain-on-failure` | Saved under `test-results/` when a test fails |
 | `reporter` | `html`, `list`, custom summary | HTML report, console output, and `custom-report/summary.md` |
@@ -100,11 +100,16 @@ onecall-tech/
 ├── tsconfig.json
 ├── package.json
 ├── .github/
-│   └── PULL_REQUEST_TEMPLATE.md
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/
+│       └── e2e.yml           # Optional GitHub Actions adapter
 ├── docs/
 │   └── workflows/
+│       ├── CI.md
 │       ├── PR_WORKFLOW.md
 │       └── PR_SELF_REVIEW.md
+├── scripts/
+│   └── ci.sh                 # Platform-agnostic CI entry point
 ├── reporters/
 │   └── summaryReporter.ts  # Custom post-run summary (JSON + Markdown)
 ├── pages/                  # Page Objects (not tests)
@@ -189,7 +194,7 @@ The current test covers:
 - Add `utils/` for test data builders and helpers.
 - Expand browser coverage (Firefox, WebKit).
 - Tag tests for smoke vs. regression execution.
-- Add CI workflow with artifact upload (reports, traces).
+- Expand CI (browser matrix, scheduled runs, PR comments).
 - Replace browser `alert()` assertion with a DOM-based success state if the app changes.
 
 ---
@@ -202,6 +207,7 @@ The current test covers:
 | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Cheat sheet for common tasks |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Engineering and coding standards |
 | [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) | Limitations and trade-offs |
+| [docs/workflows/CI.md](./docs/workflows/CI.md) | Platform-agnostic CI pipeline |
 | [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md) | Pull request lifecycle |
 | [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) | Stage 1 self-review (agent pre-process) |
 | [.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md) | GitHub PR body template |

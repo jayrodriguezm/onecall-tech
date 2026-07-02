@@ -9,6 +9,10 @@
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
+    "typecheck": "tsc --noEmit",
+    "ci:install": "npm ci && npx playwright install chromium --with-deps",
+    "ci:verify": "npm run typecheck && npm test",
+    "ci": "bash scripts/ci.sh",
     "report": "playwright show-report"
   },
   "repository": {
