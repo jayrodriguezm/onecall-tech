@@ -13,21 +13,25 @@ For project overview, see [README.md](./README.md). For quick commands, see [QUI
 - **Tests** live in `tests/` and must not contain selectors or low-level locator logic.
 - **Page Objects** live in `pages/` and encapsulate all UI interaction for a page or flow.
 - **Shared base behavior** lives in `pages/base/BasePage.ts`.
+- **Fixtures** live in `fixtures/` and inject page objects via Playwright's `test.extend`.
+- **Test data** lives in `utils/` (builders, constants) — not inline in specs.
 - Avoid duplicating documentation — link between docs instead.
 
 ---
 
 ## Folder Conventions
 
-| Folder | Responsibility |
-|---|---|
-| `pages/` | Page Object classes |
-| `pages/base/` | Abstract base classes |
-| `tests/` | Executable test specs |
-| `reporters/` | Custom Playwright reporters |
-| `components/` | Reusable UI fragments *(future)* |
-| `api/` | API clients *(future)* |
-| `utils/` | Helpers, builders, shared utilities *(future)* |
+| Folder        | Responsibility                                   |
+| ------------- | ------------------------------------------------ |
+| `pages/`      | Page Object classes                              |
+| `pages/base/` | Abstract base classes                            |
+| `tests/`      | Executable test specs                            |
+| `reporters/`  | Custom Playwright reporters                      |
+| `components/` | Reusable UI fragments _(future)_                 |
+| `api/`        | API clients _(future)_                           |
+| `fixtures/`   | Playwright test fixtures (page object injection) |
+| `config/`     | Environment and shared configuration             |
+| `utils/`      | Helpers, builders, shared utilities              |
 
 Do not place page objects inside `tests/`.
 
@@ -35,21 +39,21 @@ Do not place page objects inside `tests/`.
 
 ## Naming Conventions
 
-| Artifact | Convention | Example |
-|---|---|---|
-| Page Object file | PascalCase, suffix implied | `HomePage.ts` |
-| Page Object class | PascalCase | `QuoteFormPage` |
-| Test spec file | camelCase + `.spec.ts` | `requestQuote.spec.ts` |
-| Test describe block | Feature area | `'Request a Quote'` |
-| Test title | Behavior-focused | `'should submit the RFQ form and show success message'` |
-| Private locators | camelCase methods returning `Locator` | `firstNameInput()` |
-| Public actions | verb-first async methods | `fillContactInfo()`, `clickRequestAQuote()` |
+| Artifact            | Convention                            | Example                                                 |
+| ------------------- | ------------------------------------- | ------------------------------------------------------- |
+| Page Object file    | PascalCase, suffix implied            | `HomePage.ts`                                           |
+| Page Object class   | PascalCase                            | `QuoteFormPage`                                         |
+| Test spec file      | camelCase + `.spec.ts`                | `requestQuote.spec.ts`                                  |
+| Test describe block | Feature area                          | `'Request a Quote'`                                     |
+| Test title          | Behavior-focused                      | `'should submit the RFQ form and show success message'` |
+| Private locators    | camelCase methods returning `Locator` | `firstNameInput()`                                      |
+| Public actions      | verb-first async methods              | `fillContactInfo()`, `clickRequestAQuote()`             |
 
 ---
 
 ## Branch Strategy
 
-- `main` — stable, passing tests
+- `master` — stable, passing tests
 - Feature branches — `feature/<short-description>` or `fix/<short-description>`
 - Keep branches focused on a single change
 
@@ -106,7 +110,9 @@ Example structure:
 
 ```typescript
 export class ExamplePage extends BasePage {
-  getUrl(): string { return '/example'; }
+  getUrl(): string {
+    return '/example';
+  }
 
   private submitButton() {
     return this.page.getByRole('button', { name: /submit/i });
@@ -122,7 +128,7 @@ export class ExamplePage extends BasePage {
 
 ## Component Standards
 
-*(Reserved for future use.)*
+_(Reserved for future use.)_
 
 When `components/` is introduced, components should represent reusable UI fragments (modals, nav bars, form sections) shared across multiple page objects.
 
@@ -132,8 +138,26 @@ When `components/` is introduced, components should represent reusable UI fragme
 
 - One spec file per feature or user journey.
 - Use `test.describe()` to group related scenarios.
+- Import `test` and `expect` from `fixtures/` (not `@playwright/test` directly) so page objects are injected.
+- Tag tests with `@smoke` and/or `@regression` using Playwright's `{ tag: [...] }` option.
 - Specs should read like a user story: arrange → act → assert.
 - Step comments are acceptable for multi-step flows but should not replace readable method names.
+
+Example:
+
+```typescript
+import { test, expect } from '../fixtures';
+import { buildQuoteFormData } from '../utils/quoteTestData';
+
+test(
+  'should submit RFQ',
+  { tag: ['@smoke', '@regression'] },
+  async ({ homePage, quoteFormPage }) => {
+    const formData = buildQuoteFormData();
+    // ...
+  },
+);
+```
 
 ---
 
@@ -197,13 +221,13 @@ This repo is scoped as a **pure UI automation framework** — browser E2E tests 
 
 For that reason, **we do not add a custom logging framework** (Winston, Pino, etc.). Playwright already provides the observability UI tests need:
 
-| Need | Use instead |
-|---|---|
-| Pass/fail and step output | `list` reporter |
-| Post-run review | HTML report (`npm run report`) |
-| Custom execution summary | `custom-report/summary.md` (see `reporters/summaryReporter.ts`) |
-| Step-by-step replay | Trace (`on-first-retry` in CI) |
-| Failure evidence | Screenshot and video (see `playwright.config.ts`) |
+| Need                      | Use instead                                                     |
+| ------------------------- | --------------------------------------------------------------- |
+| Pass/fail and step output | `list` reporter                                                 |
+| Post-run review           | HTML report (`npm run report`)                                  |
+| Custom execution summary  | `custom-report/summary.md` (see `reporters/summaryReporter.ts`) |
+| Step-by-step replay       | Trace (`on-first-retry` in CI)                                  |
+| Failure evidence          | Screenshot and video (see `playwright.config.ts`)               |
 
 See [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) → Debugging & failure artifacts for details.
 
@@ -240,12 +264,12 @@ Update documentation when you:
 - Introduce a known limitation or workaround
 - Add new npm scripts
 
-| Change type | Update |
-|---|---|
-| New command or script | `QUICK_REFERENCE.md`, `README.md` |
-| CI workflow change | `scripts/ci.sh`, [docs/workflows/CI.md](./docs/workflows/CI.md), `QUICK_REFERENCE.md` |
-| New convention | `CONTRIBUTING.md` |
-| New limitation | `KNOWN_ISSUES.md` |
-| New doc or workflow | `AGENTS.md` task routing table |
-| Custom reporter change | `QUICK_REFERENCE.md`, `README.md` configuration |
-| Structural change | `README.md` folder structure section |
+| Change type            | Update                                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------- |
+| New command or script  | `QUICK_REFERENCE.md`, `README.md`                                                                          |
+| CI workflow change     | `scripts/ci.sh`, [docs/workflows/CI.md](./docs/workflows/CI.md), `QUICK_REFERENCE.md`, `eslint.config.mjs` |
+| New convention         | `CONTRIBUTING.md`                                                                                          |
+| New limitation         | `KNOWN_ISSUES.md`                                                                                          |
+| New doc or workflow    | `AGENTS.md` task routing table                                                                             |
+| Custom reporter change | `QUICK_REFERENCE.md`, `README.md` configuration                                                            |
+| Structural change      | `README.md` folder structure section                                                                       |

@@ -11,20 +11,24 @@
 ```
 pages/          Page Objects
 pages/base/     BasePage abstract class
+fixtures/       Playwright fixtures (page object injection)
+utils/          Test data builders and helpers
+config/         Environment configuration (BASE_URL)
 tests/          Test specs (*.spec.ts)
 playwright.config.ts
 tsconfig.json
 ```
 
-| What | Where |
-|---|---|
-| Page Objects | `pages/` |
-| Components | `components/` *(reserved, not yet used)* |
-| Tests | `tests/` |
-| Reporters | `reporters/` |
-| API clients | `api/` *(reserved, not yet used)* |
-| Utilities | `utils/` *(reserved, not yet used)* |
-| Configuration | `playwright.config.ts`, `tsconfig.json` |
+| What          | Where                                           |
+| ------------- | ----------------------------------------------- |
+| Page Objects  | `pages/`                                        |
+| Fixtures      | `fixtures/`                                     |
+| Test data     | `utils/`                                        |
+| Components    | `components/` _(reserved, not yet used)_        |
+| Tests         | `tests/`                                        |
+| Reporters     | `reporters/`                                    |
+| API clients   | `api/` _(reserved, not yet used)_               |
+| Configuration | `playwright.config.ts`, `config/env.ts`, `.env` |
 
 ---
 
@@ -32,6 +36,7 @@ tsconfig.json
 
 ```bash
 npm install
+cp .env.example .env   # optional — override BASE_URL
 ```
 
 Chromium is installed automatically via `postinstall`. Fallback:
@@ -44,32 +49,37 @@ npx playwright install chromium
 
 ## Common Commands
 
-| Command | Action |
-|---|---|
-| `npm test` | Run all tests (headless, default) |
-| `npm run test:headed` | Run with visible browser |
-| `npm run test:ui` | Playwright UI mode (pick tests, watch, time travel) |
-| `npm run test:debug` | Playwright Inspector (pause, step, pick locators) |
-| `npm run report` | Open last HTML report |
-| `npm run typecheck` | Type-check without running tests |
-| `npm run ci` | Full CI pipeline (install + verify) — same as `scripts/ci.sh` |
-| `npm run ci:verify` | Type-check + tests only (deps must exist) |
+| Command                   | Action                                                        |
+| ------------------------- | ------------------------------------------------------------- |
+| `npm test`                | Run all tests (headless, default)                             |
+| `npm run test:smoke`      | Run tests tagged `@smoke`                                     |
+| `npm run test:regression` | Run tests tagged `@regression`                                |
+| `npm run test:headed`     | Run with visible browser                                      |
+| `npm run test:ui`         | Playwright UI mode (pick tests, watch, time travel)           |
+| `npm run test:debug`      | Playwright Inspector (pause, step, pick locators)             |
+| `npm run report`          | Open last HTML report                                         |
+| `npm run lint`            | ESLint                                                        |
+| `npm run format`          | Prettier (write)                                              |
+| `npm run format:check`    | Prettier (check only)                                         |
+| `npm run typecheck`       | Type-check without running tests                              |
+| `npm run ci`              | Full CI pipeline (install + verify) — same as `scripts/ci.sh` |
+| `npm run ci:verify`       | Lint, format, typecheck, tests (deps must exist)              |
 
 ---
 
 ## Smoke Execution
 
-Single test suite today — run everything:
-
 ```bash
-npm test
+npm run test:smoke
 ```
 
 ---
 
 ## Regression Execution
 
-Not yet defined. When tags are added, run tagged suites here.
+```bash
+npm run test:regression
+```
 
 ---
 
@@ -83,10 +93,10 @@ npm run report           # Playwright HTML report (playwright-report/)
 
 **Custom summary** (this repo): after every run, `reporters/summaryReporter.ts` writes:
 
-| File | Format |
-|---|---|
-| `custom-report/summary.md` | Human-readable execution summary |
-| `custom-report/summary.json` | Machine-readable results |
+| File                         | Format                           |
+| ---------------------------- | -------------------------------- |
+| `custom-report/summary.md`   | Human-readable execution summary |
+| `custom-report/summary.json` | Machine-readable results         |
 
 Open `custom-report/summary.md` in your editor, or parse `summary.json` in CI.
 
@@ -100,74 +110,73 @@ To watch actions with a 1s pause between steps, uncomment `headless: false` and 
 
 ---
 
-## Debugging & failure artifacts
+## Environment Variables
 
-Configured in `playwright.config.ts`. Full detail lives here; [README.md](./README.md) summarizes config values.
+Copy `.env.example` to `.env` and adjust as needed:
 
-### Interactive debugging (while writing tests)
+| Variable   | Default                           | Purpose                |
+| ---------- | --------------------------------- | ---------------------- |
+| `BASE_URL` | `https://astroflow.wingflows.com` | Application under test |
 
-| Command | Tool |
-|---|---|
-| `npm run test:debug` | **Playwright Inspector** — pause, step line-by-line, pick locators |
-| `npm run test:ui` | **UI Mode** — pick tests, watch runs, time-travel DOM |
-| `npm run test:headed` | Visible browser without Inspector |
-
-### Artifacts after a run
-
-| Artifact | Config | When captured | Location |
-|---|---|---|---|
-| **Trace** | `trace: 'on-first-retry'` | When a test **retry** runs | `test-results/` (`.zip`) |
-| **Screenshot** | `screenshot: 'only-on-failure'` | Test fails | `test-results/` |
-| **Video** | `video: 'retain-on-failure'` | Test fails | `test-results/` |
-| **HTML report** | `reporter: 'html'` | Every run | `playwright-report/` |
-| **Custom summary** | `reporters/summaryReporter.ts` | Every run | `custom-report/summary.md`, `summary.json` |
-
-### What `on-first-retry` means
-
-Playwright records a **trace** (timeline, DOM snapshots, network, console) only when a test enters a **retry attempt** — not on a clean first-pass success.
-
-| Run outcome | Trace saved? |
-|---|---|
-| Passes on first try | No |
-| Fails, then retries (CI) | Yes — on the retry run |
-| Passes on retry | Yes — from the retry attempt |
-
-**Local vs CI:** `retries` is `0` locally and `2` in CI. Traces from `on-first-retry` appear mainly in **CI** or when you opt in locally:
-
-```bash
-CI=1 npm test          # enables retries → traces on retry
-# or temporarily in playwright.config.ts: retries: 1, trace: 'retain-on-failure'
-```
-
-### Viewing a trace
-
-From the HTML report (`npm run report`) — click the trace link on a failed/retried test.
-
-Or from the command line:
-
-```bash
-npx playwright show-trace test-results/<test-folder>/trace.zip
-```
-
-Opens the **Trace Viewer**: step through each action, inspect DOM, network, and console at any point.
+Playwright loads `.env` automatically. A pre-flight health check in `global-setup.ts` runs before tests.
 
 ---
 
-## Troubleshooting
+## Debugging & failure artifacts
 
-| Symptom | Fix |
-|---|---|
-| Page never loads / timeout on `goto` | Confirm the site opens in a normal browser; check network connectivity |
-| `Executable doesn't exist` | Run `npx playwright install chromium` |
-| `No dialog is showing` on submit | Use the `Promise.all` dialog pattern — see [CONTRIBUTING.md](./CONTRIBUTING.md) |
-| Red squiggles in IDE | Reload window; ensure workspace TypeScript version matches project (`typescript` in `devDependencies`) |
+When a test fails, Playwright saves artifacts under `test-results/`:
+
+| Artifact   | When              | Location                                     |
+| ---------- | ----------------- | -------------------------------------------- |
+| Screenshot | Test failure      | `test-results/<test-name>/test-failed-*.png` |
+| Video      | Test failure      | `test-results/<test-name>/video.webm`        |
+| Trace      | First retry in CI | `test-results/<test-name>/trace.zip`         |
+
+Open a trace:
+
+```bash
+npx playwright show-trace test-results/<path-to-trace.zip>
+```
+
+**Local retries:** `retries: 0` locally — traces appear mainly in CI (`on-first-retry`).
 
 ---
 
 ## Adding a New Test
 
-1. Create `tests/<name>.spec.ts`
-2. Import page objects from `pages/`
-3. Keep selectors out of the spec — add interactions to a page object instead
+1. Create `tests/<feature>.spec.ts`
+2. Import `test`, `expect` from `../fixtures`
+3. Use injected fixtures (`homePage`, `quoteFormPage`) or add new fixtures in `fixtures/index.ts`
+4. Tag with `@smoke` and/or `@regression` as appropriate
+5. Use `buildQuoteFormData()` or add builders in `utils/`
+6. Run `npm run lint && npm run typecheck && npm test`
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for full conventions. For opening a PR, see [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md).
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full standards.
+
+---
+
+## Adding a Page Object
+
+1. Create `pages/<Name>Page.ts` extending `BasePage`
+2. Implement `getUrl()` if the page is directly navigable
+3. Keep locators private; expose public action methods
+4. Register in `fixtures/index.ts` if used across multiple specs
+
+---
+
+## Type-Checking
+
+```bash
+npm run typecheck
+```
+
+---
+
+## Related Docs
+
+| Doc                                            | Use when         |
+| ---------------------------------------------- | ---------------- |
+| [README.md](./README.md)                       | Project overview |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)           | Coding standards |
+| [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)           | Limitations      |
+| [docs/workflows/CI.md](./docs/workflows/CI.md) | CI pipeline      |

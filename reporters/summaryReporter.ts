@@ -1,11 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type {
-  FullResult,
-  Reporter,
-  TestCase,
-  TestResult,
-} from '@playwright/test/reporter';
+import type { FullResult, Reporter, TestCase, TestResult } from '@playwright/test/reporter';
 
 type SummaryReporterOptions = {
   outputDir?: string;
@@ -64,7 +59,9 @@ class SummaryReporter implements Reporter {
   onEnd(result: FullResult): void {
     const totals = {
       passed: this.tests.filter((t) => t.status === 'passed' && t.retry === 0).length,
-      failed: this.tests.filter((t) => t.status === 'failed' || t.status === 'timedOut' || t.status === 'interrupted').length,
+      failed: this.tests.filter(
+        (t) => t.status === 'failed' || t.status === 'timedOut' || t.status === 'interrupted',
+      ).length,
       skipped: this.tests.filter((t) => t.status === 'skipped').length,
       flaky: this.tests.filter((t) => t.status === 'passed' && t.retry > 0).length,
       total: this.tests.length,
@@ -154,6 +151,7 @@ class SummaryReporter implements Reporter {
   }
 
   private stripAnsi(text: string): string {
+    // eslint-disable-next-line no-control-regex -- intentional ANSI escape removal
     return text.replace(/\x1B\[[0-9;]*m/g, '');
   }
 }

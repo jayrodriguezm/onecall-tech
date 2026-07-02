@@ -10,11 +10,11 @@ Documented limitations and intentional trade-offs for this framework. This is **
 
 The CI **contract** is platform-agnostic: [`scripts/ci.sh`](../scripts/ci.sh) (or `npm run ci`). See [docs/workflows/CI.md](../docs/workflows/CI.md).
 
-| Phase | Command |
-|---|---|
-| Full pipeline | `bash scripts/ci.sh` / `npm run ci` |
-| Install only | `bash scripts/ci.sh install` / `npm run ci:install` |
-| Verify only | `bash scripts/ci.sh verify` / `npm run ci:verify` |
+| Phase         | Command                                             |
+| ------------- | --------------------------------------------------- |
+| Full pipeline | `bash scripts/ci.sh` / `npm run ci`                 |
+| Install only  | `bash scripts/ci.sh install` / `npm run ci:install` |
+| Verify only   | `bash scripts/ci.sh verify` / `npm run ci:verify`   |
 
 GitHub Actions (`.github/workflows/e2e.yml`) is an **optional adapter** — not required. Wire the same script into Jenkins, GitLab, CircleCI, or run locally.
 
@@ -26,17 +26,15 @@ Only Chromium is configured in `playwright.config.ts`. Firefox and WebKit are no
 
 **Why:** Keeps setup minimal for the current single-test scope. Cross-browser coverage can be added when the suite grows.
 
-### Single test, no tagging
+### Single test with smoke/regression tags
 
-The suite contains one E2E test with no `@smoke` or `@regression` tags.
+The suite contains one E2E test tagged `@smoke` and `@regression`. Run subsets with `npm run test:smoke` or `npm run test:regression`.
 
-**Why:** Tagging adds value once multiple tests exist. Smoke and regression are currently equivalent.
+**Why:** Tag infrastructure is in place; additional tests will use the same pattern as coverage grows.
 
 ### External site dependency
 
-All tests target the live site at `https://astroflow.wingflows.com`.
-
-**Why:** This is a demo/exercise target, not a controlled test environment. Tests depend on site availability and unchanged UI.
+All tests target the configured `BASE_URL` (default: `https://astroflow.wingflows.com`). A pre-flight health check in `global-setup.ts` fails fast when the site is unreachable.
 
 ### Optional slow-motion config (commented out)
 
@@ -52,7 +50,7 @@ The RFQ form shows success through a JavaScript `alert()` dialog, not a DOM elem
 
 ### Reserved folders not yet created
 
-`components/`, `api/`, and `utils/` are documented as future locations but do not exist yet.
+`components/` and `api/` are documented as future locations but do not exist yet.
 
 **Why:** YAGNI — the current single test does not require shared components, API clients, or utilities.
 
@@ -60,30 +58,29 @@ The RFQ form shows success through a JavaScript `alert()` dialog, not a DOM elem
 
 ## Technical Debt
 
-| Item | Notes |
-|---|---|
-| `#industry` / `#timeline` ID selectors | Used where Radix UI `<select>` elements lack stable accessible names. Prefer role/label if the app improves accessibility. |
-| Hard-coded test data in spec | Acceptable for one test; should move to a builder in `utils/` as coverage grows. |
-| No test data cleanup | Form submission is client-side only (console log + alert). No backend state to reset. |
+| Item                                     | Notes                                                                                                                      |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `#industry` / `#timeline` ID selectors   | Used where Radix UI `<select>` elements lack stable accessible names. Prefer role/label if the app improves accessibility. |
+| Single default in `buildQuoteFormData()` | Acceptable for one test; add variants or overrides as coverage grows.                                                      |
+| No test data cleanup                     | Form submission is client-side only (console log + alert). No backend state to reset.                                      |
 
 ---
 
 ## Deferred Improvements
 
 - Cross-browser matrix (Firefox, WebKit)
-- Test tagging for smoke vs. regression
 - CI enhancements (browser matrix, scheduled runs, PR comments)
-- Test data factories in `utils/`
+- Test data factories for additional journeys
 - DOM-based success assertion if the application replaces `alert()`
 
 ---
 
 ## External Dependencies
 
-| Dependency | Impact |
-|---|---|
+| Dependency                        | Impact                                        |
+| --------------------------------- | --------------------------------------------- |
 | `https://astroflow.wingflows.com` | Tests fail if the site is down or unreachable |
-| AstroFlow open-source template | Form field IDs and labels assumed stable |
+| AstroFlow open-source template    | Form field IDs and labels assumed stable      |
 
 ---
 
@@ -101,9 +98,9 @@ Scope was intentionally limited to demonstrate structure and documentation matur
 
 ## Design Trade-offs
 
-| Trade-off | Chosen | Alternative | Reason |
-|---|---|---|---|
-| Page objects location | `pages/` at repo root | Inside `tests/` | Clear separation of tests vs. reusable UI code |
-| Retries | 0 local, 2 in CI | Always retry | Expose flakiness locally; tolerate transient CI failures |
-| Parallel workers | Default local, 1 in CI | Always parallel | Predictable CI runs for now |
-| Dialog vs. DOM assertion | Dialog listener | Visible success banner | Matches actual app behavior today |
+| Trade-off                | Chosen                 | Alternative            | Reason                                                   |
+| ------------------------ | ---------------------- | ---------------------- | -------------------------------------------------------- |
+| Page objects location    | `pages/` at repo root  | Inside `tests/`        | Clear separation of tests vs. reusable UI code           |
+| Retries                  | 0 local, 2 in CI       | Always retry           | Expose flakiness locally; tolerate transient CI failures |
+| Parallel workers         | Default local, 1 in CI | Always parallel        | Predictable CI runs for now                              |
+| Dialog vs. DOM assertion | Dialog listener        | Visible success banner | Matches actual app behavior today                        |

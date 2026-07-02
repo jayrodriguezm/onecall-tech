@@ -95,9 +95,9 @@ Reviewers check:
 
 ## Related documents
 
-| Document | Role |
-|---|---|
-| [PR_SELF_REVIEW.md](./PR_SELF_REVIEW.md) | Pre-push agent checklist and Gate |
-| [.github/PULL_REQUEST_TEMPLATE.md](../../.github/PULL_REQUEST_TEMPLATE.md) | PR body structure on GitHub |
-| [CONTRIBUTING.md](../../CONTRIBUTING.md) | Engineering standards |
-| [KNOWN_ISSUES.md](../../KNOWN_ISSUES.md) | Repo-wide limitations to cite in PRs |
+| Document                                                                   | Role                                 |
+| -------------------------------------------------------------------------- | ------------------------------------ |
+| [PR_SELF_REVIEW.md](./PR_SELF_REVIEW.md)                                   | Pre-push agent checklist and Gate    |
+| [.github/PULL_REQUEST_TEMPLATE.md](../../.github/PULL_REQUEST_TEMPLATE.md) | PR body structure on GitHub          |
+| [CONTRIBUTING.md](../../CONTRIBUTING.md)                                   | Engineering standards                |
+| [KNOWN_ISSUES.md](../../KNOWN_ISSUES.md)                                   | Repo-wide limitations to cite in PRs |

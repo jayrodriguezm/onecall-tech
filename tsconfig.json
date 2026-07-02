@@ -11,6 +11,15 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["pages/**/*.ts", "tests/**/*.ts", "reporters/**/*.ts", "playwright.config.ts"],
+  "include": [
+    "config/**/*.ts",
+    "fixtures/**/*.ts",
+    "global-setup.ts",
+    "pages/**/*.ts",
+    "tests/**/*.ts",
+    "utils/**/*.ts",
+    "reporters/**/*.ts",
+    "playwright.config.ts"
+  ],
   "exclude": ["node_modules"]
 }

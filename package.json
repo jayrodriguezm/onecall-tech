@@ -3,15 +3,23 @@
   "version": "1.0.0",
   "description": "Playwright TypeScript E2E tests for AstroFlow logistics site",
   "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "postinstall": "playwright install chromium",
     "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep @regression",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "ci:install": "npm ci && npx playwright install chromium --with-deps",
-    "ci:verify": "npm run typecheck && npm test",
+    "ci:verify": "npm run lint && npm run format:check && npm run typecheck && npm test",
     "ci": "bash scripts/ci.sh",
     "report": "playwright show-report"
   },
@@ -19,8 +27,13 @@
     "type": "git",
     "url": "git+https://github.com/jayrodriguezm/onecall-tech.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "playwright",
+    "e2e",
+    "typescript",
+    "automation"
+  ],
+  "author": "Jairo Rodriguez",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
@@ -28,8 +41,14 @@
   },
   "homepage": "https://github.com/jayrodriguezm/onecall-tech#readme",
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.0",
-    "typescript": "^6.0.3"
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-playwright": "^2.3.0",
+    "prettier": "^3.6.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.48.0"
   }
 }

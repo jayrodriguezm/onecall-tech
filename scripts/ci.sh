@@ -17,6 +17,8 @@ install() {
 }
 
 verify() {
+  npm run lint
+  npm run format:check
   npm run typecheck
   npm test
 }

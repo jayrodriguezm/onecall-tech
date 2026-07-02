@@ -10,11 +10,11 @@ For GitHub Actions, see [`.github/workflows/e2e.yml`](../.github/workflows/e2e.y
 
 ## CI contract
 
-| Phase | Command | Purpose |
-|---|---|---|
-| **Install** | `scripts/ci.sh install` | `npm ci` + Playwright Chromium with OS deps |
-| **Verify** | `scripts/ci.sh verify` | `npm run typecheck` + `npm test` |
-| **Full pipeline** | `scripts/ci.sh` | Install + verify (default) |
+| Phase             | Command                 | Purpose                                                    |
+| ----------------- | ----------------------- | ---------------------------------------------------------- |
+| **Install**       | `scripts/ci.sh install` | `npm ci` + Playwright Chromium with OS deps                |
+| **Verify**        | `scripts/ci.sh verify`  | `npm run lint` + `format:check` + `typecheck` + `npm test` |
+| **Full pipeline** | `scripts/ci.sh`         | Install + verify (default)                                 |
 
 Equivalent npm scripts:
 
@@ -25,6 +25,14 @@ npm run ci:verify       # verify phase only
 ```
 
 Set `CI=true` in your environment (most CI runners do this automatically). It enables retries and worker settings in `playwright.config.ts`.
+
+Optional environment variables (see `.env.example`):
+
+| Variable   | Default                           | Purpose                |
+| ---------- | --------------------------------- | ---------------------- |
+| `BASE_URL` | `https://astroflow.wingflows.com` | Application under test |
+
+A pre-flight health check in `global-setup.ts` runs before tests and fails fast if the target site is unreachable.
 
 ---
 
@@ -49,12 +57,12 @@ npm run ci:verify
 
 After a run, these paths are produced (upload in your CI system as needed):
 
-| Path | Contents |
-|---|---|
-| `playwright-report/` | Playwright HTML report |
-| `custom-report/summary.md` | Custom Markdown summary |
-| `custom-report/summary.json` | Custom JSON summary |
-| `test-results/` | Screenshots, video, traces (on failure) |
+| Path                         | Contents                                |
+| ---------------------------- | --------------------------------------- |
+| `playwright-report/`         | Playwright HTML report                  |
+| `custom-report/summary.md`   | Custom Markdown summary                 |
+| `custom-report/summary.json` | Custom JSON summary                     |
+| `test-results/`              | Screenshots, video, traces (on failure) |
 
 ---
 
@@ -112,14 +120,14 @@ Possible future extensions:
 
 - Browser matrix (parameterize browser in `ci.sh`)
 - Scheduled / nightly runs (provider config only)
-- Smoke vs regression tags (new npm script, then call from `ci.sh`)
+- PR report comments (provider config only)
 
 ---
 
 ## Related docs
 
-| Document | Purpose |
-|---|---|
-| [QUICK_REFERENCE.md](../QUICK_REFERENCE.md) | Local commands and debugging |
-| [KNOWN_ISSUES.md](../KNOWN_ISSUES.md) | CI limitations and trade-offs |
+| Document                                        | Purpose                                        |
+| ----------------------------------------------- | ---------------------------------------------- |
+| [QUICK_REFERENCE.md](../QUICK_REFERENCE.md)     | Local commands and debugging                   |
+| [KNOWN_ISSUES.md](../KNOWN_ISSUES.md)           | CI limitations and trade-offs                  |
 | [playwright.config.ts](../playwright.config.ts) | `retries`, `workers`, reporters when `CI=true` |

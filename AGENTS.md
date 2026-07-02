@@ -19,29 +19,31 @@ Humans: start with [README.md](./README.md). This file is optimized for agents.
 
 ## Task → document routing
 
-| Task | Read |
-|---|---|
-| Understand the project | [README.md](./README.md) |
-| Run tests or common commands | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) |
-| Debug a failed test or inspect traces | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) → Debugging & failure artifacts |
-| Add or change a test spec | [CONTRIBUTING.md](./CONTRIBUTING.md) → Test organization, Assertion strategy |
-| Add or change a page object | [CONTRIBUTING.md](./CONTRIBUTING.md) → Page Object standards, Selector strategy |
-| Change Playwright / TypeScript config | [README.md](./README.md) → Configuration; [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) for trade-offs |
-| Change CI pipeline | [docs/workflows/CI.md](./docs/workflows/CI.md) → `scripts/ci.sh` |
-| Open or prepare a pull request | [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md) |
-| Pre-push / pre-PR self-review (required) | [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) |
-| Fill in the GitHub PR body | [.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md) |
-| Check known limitations | [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) |
-| Coding standards (selectors, waits, naming) | [CONTRIBUTING.md](./CONTRIBUTING.md) |
+| Task                                        | Read                                                                                          |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Understand the project                      | [README.md](./README.md)                                                                      |
+| Run tests or common commands                | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)                                                    |
+| Debug a failed test or inspect traces       | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) → Debugging & failure artifacts                    |
+| Add or change a test spec                   | [CONTRIBUTING.md](./CONTRIBUTING.md) → Test organization, Assertion strategy                  |
+| Add or change a page object                 | [CONTRIBUTING.md](./CONTRIBUTING.md) → Page Object standards, Selector strategy               |
+| Add or change fixtures or test data         | [CONTRIBUTING.md](./CONTRIBUTING.md) → Test organization; `fixtures/`, `utils/`               |
+| Change environment / BASE_URL               | `.env.example`, `config/env.ts`, [README.md](./README.md) → Configuration                     |
+| Change Playwright / TypeScript config       | [README.md](./README.md) → Configuration; [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) for trade-offs |
+| Change CI pipeline                          | [docs/workflows/CI.md](./docs/workflows/CI.md) → `scripts/ci.sh`                              |
+| Open or prepare a pull request              | [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md)                              |
+| Pre-push / pre-PR self-review (required)    | [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md)                        |
+| Fill in the GitHub PR body                  | [.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md)                        |
+| Check known limitations                     | [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)                                                          |
+| Coding standards (selectors, waits, naming) | [CONTRIBUTING.md](./CONTRIBUTING.md)                                                          |
 
 ---
 
 ## Hard gates (agents)
 
-| Action | Requirement |
-|---|---|
+| Action                    | Requirement                                          |
+| ------------------------- | ---------------------------------------------------- |
 | `git push` to a PR branch | Stage 1 self-review posted; `Gate: Ready to open PR` |
-| `gh pr create` | Same as above — never open a PR before self-review |
+| `gh pr create`            | Same as above — never open a PR before self-review   |
 
 See [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) for the required output format.
 
@@ -49,21 +51,27 @@ See [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) for t
 
 ## Repository layout (quick)
 
-| Path | Purpose |
-|---|---|
-| `pages/` | Page Objects — not tests |
-| `pages/base/BasePage.ts` | Shared navigation contract |
-| `tests/` | Test specs only |
-| `playwright.config.ts` | Playwright runtime config |
-| `reporters/` | Custom Playwright reporters |
-| `docs/workflows/` | PR lifecycle and self-review |
+| Path                     | Purpose                                     |
+| ------------------------ | ------------------------------------------- |
+| `pages/`                 | Page Objects — not tests                    |
+| `pages/base/BasePage.ts` | Shared navigation contract                  |
+| `tests/`                 | Test specs only                             |
+| `fixtures/`              | Playwright fixtures (page object injection) |
+| `utils/`                 | Test data builders                          |
+| `config/env.ts`          | BASE_URL and environment helpers            |
+| `global-setup.ts`        | Pre-flight health check                     |
+| `playwright.config.ts`   | Playwright runtime config                   |
+| `reporters/`             | Custom Playwright reporters                 |
+| `docs/workflows/`        | PR lifecycle and self-review                |
 
 ---
 
 ## Validation before finishing work
 
 ```bash
-npx tsc --noEmit
+npm run lint
+npm run format:check
+npm run typecheck
 npm test
 ```
 
@@ -71,13 +79,13 @@ npm test
 
 ## Document responsibilities (do not duplicate)
 
-| Document | Answers |
-|---|---|
-| [README.md](./README.md) | What is this project? |
-| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | How do I run things quickly? How do traces and debugging work? |
-| [CONTRIBUTING.md](./CONTRIBUTING.md) | How should I implement changes? |
-| [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) | What limitations exist? |
-| **AGENTS.md** (this file) | **Which doc should I read for my task?** |
-| [docs/workflows/CI.md](./docs/workflows/CI.md) | How does CI work on any platform? |
-| [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md) | What is the PR lifecycle? |
-| [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) | What checks run before a PR? |
+| Document                                                               | Answers                                                        |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [README.md](./README.md)                                               | What is this project?                                          |
+| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)                             | How do I run things quickly? How do traces and debugging work? |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)                                   | How should I implement changes?                                |
+| [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)                                   | What limitations exist?                                        |
+| **AGENTS.md** (this file)                                              | **Which doc should I read for my task?**                       |
+| [docs/workflows/CI.md](./docs/workflows/CI.md)                         | How does CI work on any platform?                              |
+| [docs/workflows/PR_WORKFLOW.md](./docs/workflows/PR_WORKFLOW.md)       | What is the PR lifecycle?                                      |
+| [docs/workflows/PR_SELF_REVIEW.md](./docs/workflows/PR_SELF_REVIEW.md) | What checks run before a PR?                                   |
